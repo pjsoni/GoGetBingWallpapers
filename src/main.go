@@ -39,6 +39,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	imageList := populateDownloadData(config)
+
+	//response, e := http.Get(imageURL)
+	//fileName := "BingWallpaper-" + image.Date + ".jpg"
+	downloadImages(imageList, config)
+
+}
+
+func populateDownloadData(config Config) []Image {
 	imageList := []Image{}
 
 	for idx := config.StartIdx; idx <= config.EndIdx; idx++ {
@@ -61,7 +70,10 @@ func main() {
 			}
 		}
 	}
+	return imageList
+}
 
+func downloadImages(imageList []Image, config Config) {
 	for _, image := range imageList {
 		fmt.Println(fmt.Sprintf("Downloading file: %s", image.URL))
 		imageURL := strings.Replace(image.URL, config.OldResolution, config.NewResolution, 1)
@@ -73,13 +85,11 @@ func main() {
 			continue
 		}
 
-		//response, e := http.Get(imageURL)
 		response, e := http.Get(fmt.Sprintf("https://bing.com%s", imageURL))
 		if e != nil {
 			panic(e)
 		}
 		defer response.Body.Close()
-		//fileName := "BingWallpaper-" + image.Date + ".jpg"
 
 		file, err := os.Create(filePath)
 		if err != nil {
@@ -89,7 +99,6 @@ func main() {
 		io.Copy(file, response.Body)
 		fmt.Println(fmt.Sprintf("Saved image as %s: ", fileName))
 	}
-
 }
 
 func contains(images []Image, image Image) bool {
