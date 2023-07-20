@@ -1,0 +1,8 @@
+StartIdx=0
+EndIdx=100
+NumImages=10
+Market=en-US
+Prefix=BingWallpaper-
+OldResolution=1920x1080
+NewResolution=1920x1200
+DestinationDir=./Wallpapers
