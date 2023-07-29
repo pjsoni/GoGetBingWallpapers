@@ -1,0 +1,38 @@
+name: Code build
+
+on:
+  push:
+    paths:
+      - '**'
+    paths-ignore:
+      - '.github/**'
+    branches: [ "main" ]
+
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        goarch: [386, amd64]
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Build
+      run: |
+        cd src
+        GOARCH=${{ matrix.goarch }} go build -v
+
+    - name: Test
+      run: |
+        cd src
+        go test -v

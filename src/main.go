@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Image struct {
@@ -30,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		fmt.Println("Configuration file not found. Please specify a valid configuration file using the -config flag.")
+		fmt.Printf("Configuration file not found. Please specify a valid configuration file using the -config flag.\r\n")
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -39,17 +40,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	imageList := populateDownloadData(config)
+
+	start := time.Now()
+	fmt.Println("Start time:", start.Format(time.RFC3339))
 
 	//response, e := http.Get(imageURL)
 	//fileName := "BingWallpaper-" + image.Date + ".jpg"
-	downloadImages(imageList, config)
+	downloadImages(config)
+
+	finish := time.Now()
+	fmt.Println("Finish time:", finish.Format(time.RFC3339))
+	fmt.Println("Total time:", finish.Sub(start))
 
 }
 
 func populateDownloadData(config Config) []Image {
 	imageList := []Image{}
-
+	fmt.Println("Building image list...")
 	for idx := config.StartIdx; idx <= config.EndIdx; idx++ {
 		url := fmt.Sprintf("http://www.bing.com/HPImageArchive.aspx?format=json&idx=%d&n=%d&mkt=%s", idx, config.NumImages, config.Market)
 		resp, err := http.Get(url)
@@ -73,9 +80,16 @@ func populateDownloadData(config Config) []Image {
 	return imageList
 }
 
-func downloadImages(imageList []Image, config Config) {
+func downloadImages(config Config) {
+	imageList := populateDownloadData(config)
+
+	err := os.MkdirAll(config.DestinationDir, 0755)
+	if err != nil {
+		panic(err)
+	}
+
 	for _, image := range imageList {
-		fmt.Println(fmt.Sprintf("Downloading file: %s", image.URL))
+		fmt.Println("Downloading file: ", image.URL)
 		imageURL := strings.Replace(image.URL, config.OldResolution, config.NewResolution, 1)
 		date := formatDate(image.Date)
 		fileName := config.Prefix + date + ".jpg"
@@ -97,8 +111,9 @@ func downloadImages(imageList []Image, config Config) {
 		}
 		defer file.Close()
 		io.Copy(file, response.Body)
-		fmt.Println(fmt.Sprintf("Saved image as %s: ", fileName))
+		fmt.Println("Saved image as: ", fileName)
 	}
+	fmt.Println("Download complete!")
 }
 
 func contains(images []Image, image Image) bool {
