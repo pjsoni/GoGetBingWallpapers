@@ -2,8 +2,11 @@ name: Code build
 
 on:
   push:
+    paths:
+      - 'src/**'
     paths-ignore:
       - '.github/**'
+      - '*.md'
     branches: [ "main" ]
 
   pull_request:
