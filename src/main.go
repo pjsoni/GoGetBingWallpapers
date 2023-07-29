@@ -16,8 +16,10 @@ import (
 )
 
 type Image struct {
-	URL  string `xml:"url"`
-	Date string `xml:"startdate"`
+	URL              string `xml:"url"`
+	Date             string `xml:"startdate"`
+	Copyright        string `xml:"copyright"`
+	ImageDescription string `xml:"headline"`
 }
 
 type Images struct {
@@ -46,7 +48,9 @@ func main() {
 
 	//response, e := http.Get(imageURL)
 	//fileName := "BingWallpaper-" + image.Date + ".jpg"
-	downloadImages(config)
+	imageList := populateDownloadData(config)
+
+	downloadImages(imageList, config)
 
 	finish := time.Now()
 	fmt.Println("Finish time:", finish.Format(time.RFC3339))
@@ -80,9 +84,7 @@ func populateDownloadData(config Config) []Image {
 	return imageList
 }
 
-func downloadImages(config Config) {
-	imageList := populateDownloadData(config)
-
+func downloadImages(imageList []Image, config Config) {
 	err := os.MkdirAll(config.DestinationDir, 0755)
 	if err != nil {
 		panic(err)
@@ -111,6 +113,7 @@ func downloadImages(config Config) {
 		}
 		defer file.Close()
 		io.Copy(file, response.Body)
+
 		fmt.Println("Saved image as: ", fileName)
 	}
 	fmt.Println("Download complete!")
