@@ -12,19 +12,6 @@ on:
       - 'v*'
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        goarch: [386, amd64]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.20'
   release:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -34,6 +21,13 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
       - name: Create binary and copy config file
         run: |
           mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
