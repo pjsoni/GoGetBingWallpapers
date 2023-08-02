@@ -1,7 +1,6 @@
 name: Windows release
 
 on:
-  workflow_dispatch:
   push:
     paths:
       - 'src/**'
@@ -12,15 +11,12 @@ on:
       - 'v*'
 
 jobs:
-
-  build:
+  release:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-latest]
         goarch: [386, amd64]
-  release:
-    runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
