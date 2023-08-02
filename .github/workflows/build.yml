@@ -30,9 +30,9 @@ jobs:
     - name: Build
       run: |
         cd src
-        GOARCH=${{ matrix.goarch }} go build -v
+        GOARCH=${{ matrix.goarch }} go build
 
     - name: Test
       run: |
         cd src
-        go test -v
+        go test
