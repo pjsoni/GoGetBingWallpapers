@@ -37,6 +37,7 @@ jobs:
       - name: Create binary and copy config file
         run: |
           mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
+          ls -al
           cd src
           GOARCH=${{ matrix.goarch }} go build -o ./${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download
           cp config.example ./${{ runner.os }}-${{ matrix.goarch }}/bing.conf.example
