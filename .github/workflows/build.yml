@@ -7,7 +7,7 @@ on:
       - '!.github/**'
       - '!*.md'
     branches: [ "main" ]
-
+  workflow_dispatch:
   pull_request:
     branches: [ "main" ]
 
