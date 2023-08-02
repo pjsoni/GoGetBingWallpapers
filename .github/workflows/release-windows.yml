@@ -20,46 +20,52 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-        - name: Create binary and copy config file
-          run: |
-            mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
-            cd src
-            GOARCH=${{ matrix.goarch }} go build -o ./${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download
-            cp config.example ./${{ runner.os }}-${{ matrix.goarch }}/bing.conf.example
-    
-        - name: Create zip file
-          run: zip -r ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip ./src/${{ runner.os }}-${{ matrix.goarch }}/*
-            
-        - name: Create binary and copy config file
-          run: |
-            mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
-            cd src
-            GOARCH=${{ matrix.goarch }} go build -o ./${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download
-            cp config.example ./${{ runner.os }}-${{ matrix.goarch }}/bing.conf.example
+      - uses: actions/checkout@v3
 
-        - name: Create zip file
-          run: zip -r ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip ./src/${{ runner.os }}-${{ matrix.goarch }}/*
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      - name: Create binary and copy config file
+        run: |
+          mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
+          cd src
+          GOARCH=${{ matrix.goarch }} go build -o ./${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download
+          cp config.example ./${{ runner.os }}-${{ matrix.goarch }}/bing.conf.example
+  
+      - name: Create zip file
+        run: zip -r ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip ./src/${{ runner.os }}-${{ matrix.goarch }}/*
+          
+      - name: Create binary and copy config file
+        run: |
+          mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
+          cd src
+          GOARCH=${{ matrix.goarch }} go build -o ./${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download
+          cp config.example ./${{ runner.os }}-${{ matrix.goarch }}/bing.conf.example
 
-        - name: Generate release notes
-          run: |
-            echo "Changes in this Release" > release-notes.txt
-            git log --pretty=format:"- %s" ${{ github.event.before }}..${{ github.sha }} >> release-notes.txt
+      - name: Create zip file
+        run: zip -r ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip ./src/${{ runner.os }}-${{ matrix.goarch }}/*
 
-        - name: Create Release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ github.ref }}
-            release_name: Release ${{ github.ref }}
-            body_path: release-notes.txt
+      - name: Generate release notes
+        run: |
+          echo "Changes in this Release" > release-notes.txt
+          git log --pretty=format:"- %s" ${{ github.event.before }}..${{ github.sha }} >> release-notes.txt
 
-        - name: Upload Release Asset
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
-            asset_name: bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
-            asset_content_type: application/zip
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body_path: release-notes.txt
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
+          asset_name: bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
+          asset_content_type: application/zip
