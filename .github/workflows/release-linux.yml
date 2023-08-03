@@ -28,17 +28,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.20'
-      - name: Create binary and copy config file
-        run: |
-          mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
-          ls -al
-          cd src
-          GOARCH=${{ matrix.goarch }} go build -o ./${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download
-          cp config.example ./${{ runner.os }}-${{ matrix.goarch }}/bing.conf.example
-  
-      - name: Create zip file
-        run: zip -r ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip ./src/${{ runner.os }}-${{ matrix.goarch }}/*
-          
+   
       - name: Create binary and copy config file
         run: |
           mkdir -p ./${{ runner.os }}-${{ matrix.goarch }}
@@ -72,3 +62,5 @@ jobs:
           asset_path: ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
           asset_name: bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
           asset_content_type: application/zip
+    permissions:
+      contents: write
