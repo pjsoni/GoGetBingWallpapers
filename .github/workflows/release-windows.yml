@@ -69,3 +69,5 @@ jobs:
           asset_path: ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
           asset_name: bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
           asset_content_type: application/zip
+    permissions:
+      contents: write
