@@ -46,41 +46,41 @@ jobs:
       - name: Create zip file
         run: zip -r ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip ./src/${{ runner.os }}-${{ matrix.goarch }}/*
 
-      - name: Generate release notes from commit history
-        id: generate-release-notes-from-commit-history
-        continue-on-error: true
-        if: github.event_name == 'push'
-        run: |
-          echo "Changes in this Release" > release-notes.txt
-          git log --pretty=format:"- %s" ${{ github.event.before }}..${{ github.sha }} >> release-notes.txt
+      # - name: Generate release notes from commit history
+      #   id: generate-release-notes-from-commit-history
+      #   continue-on-error: true
+      #   if: github.event_name == 'push'
+      #   run: |
+      #     echo "Changes in this Release" > release-notes.txt
+      #     git log --pretty=format:"- %s" ${{ github.event.before }}..${{ github.sha }} >> release-notes.txt
       
-      - name: Generate release notes from GitHub release description
-        if: steps.generate-release-notes-from-commit-history.outcome == 'failure'
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const { data } = await github.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: context.ref.replace('refs/tags/', '')
-            });
-            return data.body;
-          result-encoding: string
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Generate release notes from GitHub release description
+      #   if: steps.generate-release-notes-from-commit-history.outcome == 'failure'
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       const { data } = await github.repos.getReleaseByTag({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         tag: context.ref.replace('refs/tags/', '')
+      #       });
+      #       return data.body;
+      #     result-encoding: string
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Save release notes to file
-        if: steps.generate-release-notes-from-commit-history.outcome == 'failure'
-        run: echo "${{ steps.generate-release-notes.outputs.result }}" > release-notes.txt
+      # - name: Save release notes to file
+      #   if: steps.generate-release-notes-from-commit-history.outcome == 'failure'
+      #   run: echo "${{ steps.generate-release-notes.outputs.result }}" > release-notes.txt
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body_path: release-notes.txt
+      # - name: Create Release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     body_path: release-notes.txt
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
