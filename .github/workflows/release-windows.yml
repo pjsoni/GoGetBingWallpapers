@@ -18,7 +18,7 @@ jobs:
         os: [windows-latest]
         goarch: [386, amd64]
     outputs:
-      upload_url: ${{ steps.get_release.outputs.upload_url }}
+      upload_url: ${{ steps.get_release.outputs.result }}
     steps:
       - uses: actions/checkout@v3
 
@@ -63,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.result }}
           asset_path: ./src/${{ runner.os }}-${{ matrix.goarch }}/bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
           asset_name: bing-wp-download-${{ runner.os }}-${{ matrix.goarch }}.zip
           asset_content_type: application/zip
